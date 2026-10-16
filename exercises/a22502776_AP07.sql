@@ -37,3 +37,21 @@ FROM sys.foreign_keys
 WHERE name = 'FK_warranty_claim_customer';
 
 /*A2*/
+SELECT staff_id
+FROM sales.warranty_claim
+WHERE staff_id IS NOT NULL
+  AND staff_id NOT IN (SELECT staff_id FROM sales.staffs);
+
+ALTER TABLE sales.warranty_claim
+ADD CONSTRAINT FK_warranty_claim_staff
+FOREIGN KEY (staff_id) REFERENCES sales.staffs(staff_id);
+
+SELECT name, is_disabled, is_not_trusted
+FROM sys.foreign_keys
+WHERE parent_object_id = OBJECT_ID('sales.warranty_claim');
+
+SELECT COLUMN_NAME, IS_NULLABLE
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_SCHEMA = 'sales'
+  AND TABLE_NAME = 'warranty_claim'
+  AND COLUMN_NAME = 'staff_id';
