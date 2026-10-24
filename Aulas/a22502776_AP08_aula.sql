@@ -30,3 +30,4 @@ SELECT e.employee_id, e.last_name, h.job_id AS former_job
 FROM HR.employees AS e
 LEFT OUTER JOIN HR.job_history AS h ON h.employee_id = e.employee_id
 --WHERE e.employee_id = 104;
+

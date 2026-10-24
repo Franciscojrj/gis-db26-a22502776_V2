@@ -149,3 +149,4 @@ WHERE EMPNO = 2703;
 
 DELETE from Scott.EMP
 where EMPNO = 2703;
+
