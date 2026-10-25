@@ -1,0 +1,156 @@
+/*
+  Lesson 03 - Filters, patterns, and conditional expressions
+  Student:
+  Class:
+  Date:
+*/
+
+USE ULHT_DB26;
+GO
+
+/*A1*/
+SELECT EMPLOYEE_ID, LAST_NAME, HIRE_DATE, SALARY
+FROM HR.EMPLOYEES
+WHERE SALARY > 11000 
+  AND HIRE_DATE < '2005-01-01'
+ORDER BY HIRE_DATE DESC;
+
+/*A2*/
+SELECT EMPLOYEE_ID, DEPARTMENT_ID, JOB_ID
+FROM HR.EMPLOYEES
+WHERE (DEPARTMENT_ID  = 20 OR DEPARTMENT_ID = 90)
+    AND JOB_ID NOT IN ('AD_VP');
+
+
+/*A3*/
+SELECT EMPLOYEE_ID, LAST_NAME
+FROM HR.EMPLOYEES
+WHERE EMPLOYEE_ID BETWEEN 130 AND 145
+  AND EMPLOYEE_ID NOT IN (135, 138, 141);
+
+/*A4*/
+SELECT EMPLOYEE_ID, JOB_ID, COMMISSION_PCT
+FROM HR.EMPLOYEES
+WHERE COMMISSION_PCT IS NOT NULL
+  AND JOB_ID <> 'SA_MAN';
+
+/*B1*/
+SELECT EMPLOYEE_ID, LAST_NAME
+FROM HR.EMPLOYEES
+WHERE LAST_NAME LIKE '%son';
+
+/*B2*/
+SELECT EMPLOYEE_ID, JOB_ID
+FROM HR.EMPLOYEES
+WHERE JOB_ID LIKE 'ST_%'
+    AND JOB_ID LIKE '%!_C%' ESCAPE '!';
+
+/*B3*/
+SELECT EMPLOYEE_ID, LAST_NAME
+FROM HR.EMPLOYEES
+WHERE LAST_NAME NOT LIKE '[A-M]%';
+
+/*B4*/
+SELECT EMPLOYEE_ID, DEPARTMENT_ID, MANAGER_ID,
+    IIF(DEPARTMENT_ID IS NULL, 'Reports to manager', NULL) AS manager_status
+FROM HR.EMPLOYEES
+WHERE DEPARTMENT_ID IS NULL;
+
+/*C1*/
+SELECT EMPLOYEE_ID, SALARY,
+    CASE 
+        WHEN SALARY < 3000 THEN 'Entry'
+        WHEN SALARY BETWEEN 3000 AND 5999 THEN 'Developing'
+        WHEN SALARY BETWEEN 6000 AND 10000 THEN 'Estabilished'
+        ELSE 'High'
+    END AS salary_level
+FROM HR.EMPLOYEES
+ORDER BY EMPLOYEE_ID ASC;
+
+
+/*C2*/
+SELECT EMPLOYEE_ID, DEPARTMENT_ID, SALARY,
+    CASE 
+        WHEN SALARY < 3000 THEN 'Entry'
+        WHEN SALARY BETWEEN 3000 AND 5 THEN 'Developing'
+        WHEN SALARY BETWEEN 6000 AND 10000 THEN 'Estabilished'
+        ELSE 'High'
+    END AS salary_level
+FROM HR.EMPLOYEES
+WHERE DEPARTMENT_ID = 50 
+   OR DEPARTMENT_ID = 80
+ORDER BY EMPLOYEE_ID ASC;
+
+
+/*C3*/
+SELECT 'First true branch' AS required_comment,
+       'A conditional expression returns the result of its first true branch.' AS expected_explanation
+UNION ALL
+SELECT 'Branch order' AS required_comment,
+       'A broad lower band placed first would capture higher salaries incorrectly.' AS expected_explanation;
+
+/*C4*/
+SELECT EMPLOYEE_ID, DEPARTMENT_ID,
+    CASE
+        WHEN DEPARTMENT_ID BETWEEN 10 AND 30 THEN 'Group A'
+        WHEN DEPARTMENT_ID BETWEEN 40 AND 60 THEN 'Group B'
+        ELSE 'Other'
+    END AS department_cluster
+FROM HR.EMPLOYEES
+ORDER BY EMPLOYEE_ID ASC;
+
+/*C5*/
+SELECT EMPLOYEE_ID, COMMISSION_PCT,
+    CASE
+        WHEN COMMISSION_PCT IS NULL THEN 'Missing'
+        ELSE 'Recorded'
+    END AS commission_status
+FROM HR.EMPLOYEES;
+
+/*D1Find rows where PHONE_NUMBER is missing or does not begin with one of the digits 1 through 6. Classify each row as Missing or Outside expected prefix.*/
+SELECT EMPLOYEE_ID, PHONE_NUMBER,
+    CASE
+        WHEN PHONE_NUMBER IS NULL THEN 'Missing'
+        WHEN PHONE_NUMBER NOT LIKE '[1-6]%' THEN 'Outside expected prefix'
+        ELSE 'Valid'
+    END AS phone_status
+FROM HR.EMPLOYEES
+WHERE PHONE_NUMBER IS NULL
+   OR PHONE_NUMBER NOT LIKE '[1-6]%';
+
+--SELECT EMPLOYEE_ID, PHONE_NUMBER,
+    --IIF(PHONE_NUMBER IS NULL OR PHONE_NUMBER LIKE '[7-9]%', 'Invalid', 'Valid') AS phone_status
+--FROM HR.EMPLOYEES;
+
+/*D2*/
+SELECT EMPLOYEE_ID, HIRE_DATE, PHONE_NUMBER,
+    CASE
+        WHEN PHONE_NUMBER IS NULL THEN 'Missing'
+        WHEN PHONE_NUMBER NOT LIKE '[1-6]%' THEN 'Outside expected prefix'
+        ELSE 'Valid'
+    END AS phone_status
+FROM HR.EMPLOYEES
+WHERE HIRE_DATE BETWEEN '20040101' AND '20071231'
+ORDER BY EMPLOYEE_ID ASC;
+
+/*D3*/
+--SELECT EMPLOYEE_ID, LAST_NAME,
+    --CASE
+        --WHEN LAST_NAME LIKE '%-%' OR FIRST_NAME LIKE '%-%' THEN //SHOW SPECIAL CHARACTER//
+        --ELSE 'No'
+    --END AS special_character,
+    --LOWER(RIGHT(FIRST_NAME, 1)) + '.' + LOWER(LAST_NAME) + '@company.com' AS email_address
+--FROM HR.EMPLOYEES
+--WHERE LAST_NAME LIKE '%-%' OR FIRST_NAME LIKE '%-%';
+
+
+SELECT EMPLOYEE_ID, LAST_NAME,
+    LOWER(LEFT(FIRST_NAME, 1)) + '.' + LOWER(LAST_NAME) AS email_candidate,
+    CASE
+        WHEN LOWER(LEFT(FIRST_NAME, 1)) + '.' + LOWER(LAST_NAME) LIKE '%''%' THEN 'Apostrophe'
+        WHEN LOWER(LEFT(FIRST_NAME, 1)) + '.' + LOWER(LAST_NAME) LIKE '%-%' THEN 'Hyphen'
+    END AS special_character
+FROM HR.EMPLOYEES
+WHERE LOWER(LEFT(FIRST_NAME, 1)) + '.' + LOWER(LAST_NAME) LIKE '%''%' OR LOWER(LEFT(FIRST_NAME, 1)) + '.' + LOWER(LAST_NAME) LIKE '%-%'
+ORDER BY EMPLOYEE_ID ASC;
+
