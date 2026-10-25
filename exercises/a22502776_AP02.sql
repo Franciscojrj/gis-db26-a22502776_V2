@@ -1,27 +1,88 @@
 /*
-  Lesson 01 - Read, add, change, and remove rows
+  Lesson 02 - Read, add, change, and remove rows
   Student: Francisco Jesus
   Class: Base de Dados 2º ano
   Date: 29/09/2026
 */
 
 /*a1*/
-SELECT TOP 5
-       EMPLOYEE_ID,
+SELECT EMPLOYEE_ID,
        UPPER(LAST_NAME) + ', ' + FIRST_NAME AS formal_name
-FROM HR.EMPLOYEES
-ORDER BY EMPLOYEE_ID;
+FROM HR.EMPLOYEES;
+
 
 /*a2*/
-SELECT TOP 5
-    employee_id,
-    LOWER(EMAIL) + 'example.org' as email_address
+SELECT employee_id,
+    LOWER(EMAIL) + '@example.org' as email_address
 FROM HR.EMPLOYEES
-ORDER BY EMPLOYEE_ID;
+ORDER BY employee_id;
+
 
 /*a3*/
-SELECT top 5
-  last_name,
-  LEN(LAST_NAME) AS last_name_lenght
+SELECT last_name,
+  LEN(LAST_NAME) AS last_name_length
 from hr.EMPLOYEES
-ORDER BY last_name_lenght DESC;
+ORDER BY last_name_length DESC;
+
+/*A4 Show the stored monthly salary, three months of salary as quarter_salary, and fourteen months as annual_salary.*/
+SELECT EMPLOYEE_ID, SALARY,
+  SALARY * 3 AS quarter_salary,
+  SALARY * 14 AS annual_salary
+FROM HR.EMPLOYEES;
+
+/*A5 Calculate a review_date six months after each hire date.*/
+SELECT EMPLOYEE_ID, HIRE_DATE,
+  DATEADD(MONTH, 6, HIRE_DATE) AS review_date
+FROM HR.EMPLOYEES;
+
+/*B1*/
+SELECT EMPLOYEE_ID, COMMISSION_PCT,
+  ISNULL(COMMISSION_PCT, 0) AS commission_rate
+FROM HR.EMPLOYEES
+WHERE COMMISSION_PCT IS NOT NULL;
+
+/*B2*/
+SELECT EMPLOYEE_ID, SALARY, 
+  ISNULL(COMMISSION_PCT, 0) AS COMMISSION_PCT,
+  SALARY * ISNULL(COMMISSION_PCT, 0) AS commission_amount
+FROM HR.EMPLOYEES;
+
+/*B3*/
+SELECT EMPLOYEE_ID, SALARY, 
+  ISNULL(COMMISSION_PCT, 0) AS COMMISSION_PCT,
+  SALARY * 14 * (1 + ISNULL(COMMISSION_PCT, 0)) AS annual_total
+FROM HR.EMPLOYEES
+WHERE SALARY = 10000;
+
+/*B4*/
+SELECT EMPLOYEE_ID,
+  COALESCE(CAST(MANAGER_ID AS VARCHAR(10)), 'No manager') AS manager_label
+FROM HR.EMPLOYEES;
+
+--SELECT EMPLOYEE_ID,
+  --COALESCE(MANAGER_ID, 'No MANAGER') AS MANAGER_LABEL
+--FROM HR.EMPLOYEES;
+
+/*C1*/
+SELECT EMPLOYEE_ID,
+  COALESCE(CONCAT('DEPT-', CAST(DEPARTMENT_ID AS VARCHAR(10))), 'DEPT-UNASSIGNED') AS department_code
+FROM HR.EMPLOYEES;
+
+SELECT EMPLOYEE_ID, DEPARTMENT_ID
+FROM HR.EMPLOYEES
+WHERE DEPARTMENT_ID IS NULL;
+
+SELECT EMPLOYEE_ID,
+  COALESCE('DEPT-' + CAST(DEPARTMENT_ID AS VARCHAR(10)), 'DEPT-UNASSIGNED') AS department_code
+FROM HR.EMPLOYEES;
+
+/*C2*/ 
+SELECT EMPLOYEE_ID,
+  CONVERT(CHAR(10), HIRE_DATE, 23) AS iso_hire_date
+FROM HR.EMPLOYEES;
+
+--SELECT EMPLOYEE_ID,
+  --FORMAT(CAST(HIRE_DATE AS VARCHAR(10)), 'yyyy-mm-dd') AS iso_hire_date
+--FROM HR.EMPLOYEES;
+
+
