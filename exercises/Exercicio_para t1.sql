@@ -1,8 +1,4 @@
--- Aluno: [Beatriz Ribeiro]
--- Numero: [a22503692]
--- Turma: [LCiDa01]
--- Horário: [27/10/2026, 8:45]
--- Caso de estudo: [Actor de Filme]
+-- Aluno: 
 
 --1. Cria o modelo com as Tabelas indicadas num novo schema com o teu numero de aluno--
 IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N'a22503692')
