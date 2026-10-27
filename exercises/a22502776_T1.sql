@@ -16,6 +16,10 @@ Responde às perguntas com base na base de dados disponibilizada. Escolhe tabela
 SELECT TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, TABLE_TYPE
 FROM INFORMATION_SCHEMA.TABLES;
 
+SELECT * 
+    FROM INFORMATION_SCHEMA.TABLES t
+    WHERE t.TABLE_CATALOG = 'bikestores';
+
 /*2 Escolhe duas tabelas que consideres fundamentais para base de dados:
     • Para cada uma das tabelas, lista os campos, tipos de dados, incluindo tamanhos, e nulidade.
     • Consegues identificar se estas tabelas têm dependências entre si? justifica*/
@@ -27,12 +31,25 @@ SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, IS_NULLABLE
 FROM INFORMATION_SCHEMA.COLUMNS
 WHERE TABLE_SCHEMA = 'sales' AND TABLE_NAME = 'customers';
 
+SELECT   c.COLUMN_NAME
+        ,c.TABLE_NAME
+        ,c.TABLE_SCHEMA
+        ,CONCAT(c.DATA_TYPE,'(',COALESCE(CAST(c.CHARACTER_MAXIMUM_LENGTH AS VARCHAR(10)),CONCAT(CAST(c.NUMERIC_PRECISION AS VARCHAR(10)),',',c.NUMERIC_SCALE),''),')')
+        ,IIF(c.IS_NULLABLE= 'YES','NULL','NOT NULL')
+    FROM INFORMATION_SCHEMA.COLUMNS c
+    WHERE c.TABLE_NAME IN ('products','brands')
+
+
 /*3 Consultas e operações básicas
     • Escolhe uma tabela com um campo que permita valores nulos. Apresenta alguns campos dos registos em que esse campo tenha um valor atribuído. Ordena o resultado por dois campos, utilizando ordens diferentes em cada um deles.*/
 SELECT customer_id, first_name, last_name, email
 FROM sales.customers
 WHERE email IS NOT NULL
 ORDER BY last_name ASC, first_name DESC;
+
+SELECT * 
+FROM production.products p 
+WHERE p.model_year NOT BETWEEN 2017 AND 2018
 
 /*4 Operações de linha
     • Escolhe um campo de data e apresenta, juntamente com o valor original, uma segunda data obtida através da adição de um período de tempo definido por ti. O resultado calculado deve continuar a ser um valor de data.
@@ -43,6 +60,14 @@ SELECT order_id, order_date,
 FROM sales.orders
 ORDER BY ABS(DATEDIFF(DAY, order_date, GETDATE())) DESC;
 
+SELECT * 
+    FROM INFORMATION_SCHEMA.COLUMNS c 
+    WHERE c.IS_NULLABLE = 'YES' AND c.DATA_TYPE LIKE '%char%';
+
+
+SELECT s.store_name,ISNULL(street,'no street adreess'),LOWER(CONCAT(ISNULL(LEFT(s.street,4),'0000'),s.store_name))
+    FROM sales.stores s
+    ORDER BY 3
 /*5 Consultas formatadas
 Escolhe uma tabela com um campo númerido utilizado como identificador e um campo de texto utilizado como classificador.
     • Constrói uma consulta de apresentação final com pelo menos quatro colunas. Deve incluir uma concatenação de texto, uma conversão explícita de tipo, a substituição de um possível valor nulo e a formatação de um campo numérico ou de data. Mantém pelo menos um dos valores originais junto do respetivo valor transformado.*/
@@ -121,3 +146,4 @@ WHERE order_id = 2001;
 SELECT order_id, customer_id, order_status, order_date, required_date, shipped_date, store_id, staff_id
 FROM sales.orders
 WHERE order_id = 2001;
+
